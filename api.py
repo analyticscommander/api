@@ -9,3 +9,5 @@ def get_api_response(url):
 def main():
     teams = get_api_response(url)
     variable = x
+    #random comment
+    
