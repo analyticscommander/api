@@ -8,3 +8,4 @@ def get_api_response(url):
     print(url)
 def main():
     teams = get_api_response(url)
+    variable = x
