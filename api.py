@@ -9,6 +9,9 @@ Main starting point of baseball program
 """
 def main():
     teams = get_api_response(url)
+#def save_team_by_season():
+#def save_roster_by_team():
+#def save_player_by_roster():
 
 r"""
 Retrieves api data from url and returns the response
@@ -43,8 +46,6 @@ def get_teams_by_season(year):
             })
     return teams
 
-#def save_team_by_season():
-
 r"""
 Retrieve a teams roster between a given start and end season
 provided a team_id, start season year, and end season year
@@ -69,12 +70,51 @@ def get_rosters_by_team(start_season_year, end_season_year, team_id):
         })
     return players
 
-#Retrieves a team’s 40 man roster based on team_id
-#def save_roster_by_team():
+r"""
+Retrieve a players hitting stats for a given season provided a player_id,
+season year, and game type
 
-# def save_player_by_roster():
+@param - String - game_type - The type of games you want career stats for
+@param - String - season_year - season you want stats for
+@param - String - player_id - player you want hitting stats for
 
-teams = get_teams_by_season('2018')
+@return - Dictionary - hitting_stats - player id and their hitting stats
+"""
+def get_hitting_stats_by_player(game_type, season_year, player_id):
+#breaking up URL into multi-line caused an error for some unknown reason
+    url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_tm.bam?league_list_id='mlb'&game_type='%s'&season='%s'&player_id='%s'" % (game_type, season_year, player_id)
+    data = get_api_response(url)
+    hitting_stats = []
+    stats = data["sport_hitting_tm"]["queryResults"]["row"]
+    hitting_stats.append({
+            "team_name": stats["team_full"],
+            "team_id": stats["team_id"],
+            "player_id": stats["player_id"],
+            "team_league": stats["league_full"],
+            "batting_average": stats["avg"],
+            "on-base_percentage": stats["obp"],
+            "on-base_plus_slugging": stats["ops"],
+            "slugging_percentage": stats["slg"],
+            "total_plate_appearance": stats["tpa"],
+            "hits": stats["h"],
+            "at_bats": stats["ab"],
+            "runs": stats["r"],
+            "home_run": stats["hr"],
+            "walks": stats["bb"],
+            "runs_batted_in": stats["rbi"],
+            "strikeouts": stats["so"],
+            "intentional_walk": stats["ibb"],
+            "batting_average_on_balls_in_play": stats["babip"],
+            "extra_base_hits": stats["xbh"]
+        })
+    return(hitting_stats)
+#Figure out the mystery baseball player with the player_id of '493316' and attach his name to his own stats during 2017 regular season
+#get_hitting_stats_by_player('R','2017','493316')
+#
+mystery_person_stats = get_hitting_stats_by_player('R', '2017', '493316')
+#
+teams = get_teams_by_season('2017')
 for team in teams:
-    team_rosters_by_season = get_rosters_by_team('2018','2018',team["team_id"])
-    print(team_rosters_by_season)
+    team_rosters_by_season = get_rosters_by_team('2017','2017',mystery_person_stats["team_id"])
+
+    print(mystery_person_stats)
